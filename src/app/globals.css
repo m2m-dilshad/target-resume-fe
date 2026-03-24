@@ -1,26 +1,175 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ===============================
+     BACKGROUND COLORS (LAYOUT)
+     =============================== */
+
+  --background: #f9fafb;
+  /* Main website background.
+     Use on: body, large sections, landing page background.
+     Rule: Always the lightest color in the UI. */
+
+  --surface: #ffffff;
+  /* Cards, modals, forms, containers.
+     Creates elevation above background. */
+
+  /* ===============================
+     TEXT COLORS
+     =============================== */
+
+  --foreground: #111827;
+  /* Primary text color.
+     Use on: headings, main paragraphs, titles. */
+
+  --typography-primary: #374151;
+  /* Secondary readable text.
+     Use on: descriptions, labels, content text. */
+
+  --typography-muted: #6b7280;
+  /* Less important information.
+     Use on: helper text, timestamps, metadata. */
+
+  --typography-white: #ffffff;
+  /* Text when background is dark or primary.
+     Example: buttons, badges, navbar. */
+
+  /* ===============================
+     BRAND COLORS
+     =============================== */
+
+  --primary: #3d52a0;
+  /* Main brand color.
+     Use on: primary buttons, active states, links, navbar highlights.
+     Rule: Only for important actions. */
+
+  --primary-light: #8fa4e3;
+  /* Hover states and highlights.
+     Use on: button hover, focus states, subtle UI accents. */
+
+  --primary-dark: #2f3f80;
+  /* Pressed or active states.
+     Use on: button active state or stronger emphasis. */
+
+  --border: #e5e7eb;
+  /* Borders, separators, input outlines.
+     Rule: Borders should be subtle, never darker than text. */
+
+  /* ===============================
+     FEEDBACK COLORS
+     =============================== */
+
+  --success: #22c55e;
+  /* Successful actions.
+     Example: Resume saved, Upload successful. */
+
+  --warning: #f59e0b;
+  /* Attention needed.
+     Example: Missing resume sections. */
+
+  --error: #ef4444;
+  /* Validation errors or failed actions.
+     Example: Incorrect password. */
+
+  /* ===============================
+     ACCESSIBILITY
+     =============================== */
+
+  --focus-ring: #8fa4e3;
+  /* Keyboard focus ring.
+     Appears when tabbing through inputs or buttons.
+     Important for accessibility. */
+
+  /* ===============================
+     SHADOW
+     =============================== */
+
+  --shadow-soft: rgba(0, 0, 0, 0.05);
+  /* Soft elevation shadow.
+     Use on: cards, dropdowns, modals. */
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+
   --color-foreground: var(--foreground);
+  --color-typography-muted: var(--typography-muted);
+  --color-typography-white: var(--typography-white);
+
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+
+  --color-secondary: var(--secondary);
+  --color-tertiary: var(--tertiary);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --animate-shimmer: shimmer 3.5s linear infinite;
+  --animate-spotlight: spotlight 3s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes spotlight {
+    from {
+      background-position: -100% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-breadcrumb: var(--font-ibm-plex-mono);
+  --font-heading: var(--font-orbitron);
+  --font-heading1: var(--font-poppins);
+  --font-section-titles: var(--font-rajdhani);
+  --font-base: var(--font-roboto);
+  --font-base1: var(--font-montserrat);
+  --font-button: var(--font-exo-2);
 }
 
-@media (prefers-color-scheme: dark) {
+@layer utilities {
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 #f1f5f9;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    @apply rounded-full bg-slate-100;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    @apply rounded-full border-2 border-slate-100 bg-slate-400 hover:bg-slate-500;
+  }
+}
+
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-roboto), var(--font-sans), Arial, Helvetica, sans-serif;
 }
