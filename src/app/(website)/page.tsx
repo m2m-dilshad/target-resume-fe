@@ -1,10 +1,15 @@
+import CTASection from './_components/CTASection';
+import Features from './_components/Features';
+import HeroHome from './_components/HeroHome';
+import HowItWorks from './_components/HowItWorks';
+
 export default function Home() {
   return (
-    <div className="flex min-h-full flex-col items-center justify-center gap-4 p-24">
-      <h1 className="text-3xl font-bold">Welcome to the Home Page</h1>
-      <p className="text-lg text-gray-600">
-        This is a simple home page for the Next.js application.
-      </p>
+    <div className="bg-background flex min-h-screen flex-col">
+      <HeroHome />
+      <Features />
+      <HowItWorks />
+      <CTASection />
     </div>
   );
 }

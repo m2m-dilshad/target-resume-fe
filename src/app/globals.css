@@ -87,6 +87,8 @@
   --shadow-soft: rgba(0, 0, 0, 0.05);
   /* Soft elevation shadow.
      Use on: cards, dropdowns, modals. */
+
+  --page-width: 1400px;
 }
 
 @theme inline {
@@ -133,12 +135,12 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-breadcrumb: var(--font-ibm-plex-mono);
-  --font-heading: var(--font-orbitron);
+  --font-heading: var(--font-rajdhani);
   --font-heading1: var(--font-poppins);
   --font-section-titles: var(--font-rajdhani);
   --font-base: var(--font-roboto);
   --font-base1: var(--font-montserrat);
-  --font-button: var(--font-exo-2);
+  --font-button: var(--font-geist-sans);
 }
 
 @layer utilities {

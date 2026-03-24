@@ -36,7 +36,7 @@ export function Navbar() {
 
   return (
     <header className="border-border bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-16 max-w-(--page-width) items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-2 md:flex">
           {NavLinksList.map((link) => (
