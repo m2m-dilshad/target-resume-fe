@@ -5,7 +5,7 @@ import { LucideIcon } from 'lucide-react';
 // Define available variants (HTML tags) and sizes
 type TextInputVariant = 'input' | 'div' | 'span' | 'textarea';
 
-type TextInputSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
+export type TextInputSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
 
 type TextInputTheme = 'dark' | 'light';
 
@@ -90,7 +90,7 @@ const TextInput = ({
     return (
       <div className="relative w-full">
         {Icon && (
-          <Icon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Icon className="absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-gray-400" />
         )}
 
         <input

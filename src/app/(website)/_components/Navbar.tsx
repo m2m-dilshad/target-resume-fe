@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { NavLinksList } from '../_constants/navlinks';
-import Logo from './Logo';
+import Logo from '../../../components/Logo';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -37,7 +37,7 @@ export function Navbar() {
   return (
     <header className="border-border bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="container mx-auto flex h-16 max-w-(--page-width) items-center justify-between">
-        <Logo />
+        <Logo href="/" logoSize={30} textSize="sm" className="font-bold" />
         <nav className="hidden items-center gap-2 md:flex">
           {NavLinksList.map((link) => (
             <Link

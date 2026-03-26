@@ -9,6 +9,7 @@ interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   variant?: TypographyVariant;
   size?: TypographySize;
   children: React.ReactNode;
+  htmlFor?: string; // For label variant
 }
 
 // Responsive size mapping (Mobile-first)
@@ -28,12 +29,17 @@ const Typography = ({
   size = 'base',
   className,
   children,
+  htmlFor,
   ...props
 }: TypographyProps) => {
   const Component = variant;
 
   return (
-    <Component className={cn(sizeStyles[size], className)} {...props}>
+    <Component
+      className={cn(sizeStyles[size], className)}
+      {...props}
+      htmlFor={htmlFor || (variant === 'label' ? undefined : undefined)}
+    >
       {children}
     </Component>
   );

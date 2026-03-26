@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Heading from '@/components/ui/Heading';
 import Typography from '@/components/ui/Typography';
-import Logo from './Logo';
+import Logo from '../../../components/Logo';
 
 const footerLinks = {
   product: [
@@ -28,7 +28,7 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Logo Section */}
           <div className="col-span-2 md:col-span-1">
-            <Logo />
+            <Logo href="/" logoSize={30} textSize="sm" className="font-bold" />
             <Typography
               variant="p"
               size="xs"

@@ -49,7 +49,7 @@ const themeStyles: Record<ButtonTheme, string> = {
   primary:
     'border border-transparent px-2 py-1 bg-primary text-white t tracking-tighter font-medium hover:bg-primary-dark hover:border-primary',
   secondary:
-    'border border-white px-3 py-1 bg-white text-primary tracking-tighter font-medium transition-all duration-200 hover:bg-primary hover:text-primary hover:border-white hover:text-white',
+    'border border-gray-200 px-3 py-1 bg-white text-primary tracking-tighter font-medium transition-all duration-200 hover:bg-primary hover:text-primary hover:border-white hover:text-white',
   primaryLight:
     'border border-transparent px-3 py-1 bg-primary-light text-white t tracking-tighter font-medium hover:bg-primary hover:border-primary-light   transition',
   success:
