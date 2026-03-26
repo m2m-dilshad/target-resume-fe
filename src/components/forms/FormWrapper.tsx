@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
   FieldValues,
   useForm,
+  DefaultValues,
   Path,
   useFormState,
   FormProvider as Provider,
@@ -21,6 +22,7 @@ interface FormWrapperProps<T extends FieldValues, TResponse = ActionResponse> {
   children?: React.ReactNode;
   submitButton?: React.ReactNode; // Optional custom submit button
   submitCallback?: (response: TResponse) => void; // Optional callback for handling response
+  defaultValues?: DefaultValues<T>;
 }
 
 export default function FormWrapper<T extends FieldValues, TResponse extends FieldValues>({
@@ -30,9 +32,11 @@ export default function FormWrapper<T extends FieldValues, TResponse extends Fie
   children,
   submitButton,
   submitCallback,
+  defaultValues,
 }: FormWrapperProps<T, TResponse>) {
   const formMethods = useForm<T>({
     resolver: zodResolver(schema),
+    defaultValues,
   });
 
   const onSubmit = async (data: T) => {
@@ -64,10 +68,16 @@ export default function FormWrapper<T extends FieldValues, TResponse extends Fie
   );
 }
 
-export function SubmitButton({ submitLabel }: { submitLabel: string }) {
+export function SubmitButton({
+  submitLabel,
+  className,
+}: {
+  submitLabel: string;
+  className?: string;
+}) {
   const { isSubmitting } = useFormState();
   return (
-    <Button disabled={isSubmitting} type="submit">
+    <Button disabled={isSubmitting} type="submit" className={className || ''}>
       {submitLabel}
     </Button>
   );

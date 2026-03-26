@@ -1,3 +1,4 @@
+'use client';
 import { useFormContext } from 'react-hook-form';
 import TextInput, { TextInputSize } from '../ui/TextInput';
 import { cn } from '@/lib/utils';
@@ -18,6 +19,29 @@ export function TextInputField({
       {...register(fieldName)}
       id={field.id || undefined}
       type={field.type || 'text'}
+      size={field.themeSize as TextInputSize}
+      icon={field.icon}
+      placeholder={field.placeholder}
+      className={cn(field.className || '', hasError ? 'border-red-500' : '')}
+    />
+  );
+}
+
+export function TextAreaField({
+  fieldName,
+  field,
+  hasError,
+}: {
+  fieldName: string;
+  field: Field;
+  hasError?: boolean;
+}) {
+  const { register } = useFormContext();
+  return (
+    <TextInput
+      {...register(fieldName)}
+      id={field.id || undefined}
+      variant="textarea"
       size={field.themeSize as TextInputSize}
       icon={field.icon}
       placeholder={field.placeholder}
@@ -98,6 +122,7 @@ export function RadioField({
 }
 
 export const FieldRegistry = {
+  textarea: TextAreaField,
   text: TextInputField,
   checkbox: CheckboxField,
   select: SelectField,

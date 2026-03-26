@@ -1,7 +1,9 @@
+'use client';
 import { FieldValues, Path, useFormState } from 'react-hook-form';
 import { Field } from '@/types/form.types';
 import Typography from '../ui/Typography';
 import { FieldRegistry } from './FormFieldFactory';
+import { getFieldError, hasFieldError } from '@/lib/utils';
 
 interface FormFieldProps {
   field: Field;
@@ -19,6 +21,9 @@ export default function FormField<T extends FieldValues>({
   const fieldName = field.name as Path<T>;
   const { errors } = useFormState({ name: fieldName });
 
+  const errorMessage = getFieldError(errors, fieldName as string);
+  const hasError = hasFieldError(errors, fieldName as string);
+
   const fieldRegistryName = field.type || 'text';
   const FieldComponent =
     FieldRegistry[fieldRegistryName as keyof typeof FieldRegistry] || FieldRegistry.text;
@@ -31,10 +36,8 @@ export default function FormField<T extends FieldValues>({
           {field.label}
         </Typography>
       )}
-      <FieldComponent fieldName={fieldName} field={field} hasError={!!errors?.[fieldName]} />
-      {errors?.[fieldName] && (
-        <p className="mt-1 text-xs text-red-500">{errors?.[fieldName].message?.toString()}</p>
-      )}
+      <FieldComponent fieldName={fieldName} field={field} hasError={hasError} />
+      {errorMessage && <p className="mt-1 text-xs text-red-500">{errorMessage}</p>}
     </Wrapper>
   );
 }

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 
 // Define available variants (HTML tags) and sizes
-type TextInputVariant = 'input' | 'div' | 'span' | 'textarea';
+export type TextInputVariant = 'input' | 'div' | 'span' | 'textarea';
 
 export type TextInputSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
 

@@ -2,7 +2,6 @@
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 // import {} from 'lucide-react';
-import Typography from './Typography';
 
 // Define available variants (HTML tags) and sizes
 type ButtonVariant = 'button' | 'div' | 'a' | 'link';
@@ -11,7 +10,13 @@ export type TextVariant = 'uppercase' | 'titlecase' | 'normal';
 
 export type ButtonSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
 
-export type ButtonTheme = 'primary' | 'secondary' | 'primaryLight' | 'success' | 'warning';
+export type ButtonTheme =
+  | 'primary'
+  | 'secondary'
+  | 'primaryLight'
+  | 'success'
+  | 'warning'
+  | 'ghost';
 
 export type ButtonRoundSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
 // const icons = {};
@@ -56,6 +61,7 @@ const themeStyles: Record<ButtonTheme, string> = {
     'border border-transparent px-3 py-1 bg-emerald-400 text-neutral-900 t tracking-tighter font-medium hover:bg-emerald-500 hover:border-emerald-400',
   warning:
     'border border-transparent px-3 py-1 bg-orange-700 text-white t tracking-tighter font-medium hover:bg-orange-600 hover:border-primary',
+  ghost: 'px-3 py-1 bg-transparent text-gray-700 tracking-tighter font-medium',
 };
 
 const roundStyles: Record<ButtonRoundSize, string> = {
@@ -98,10 +104,8 @@ const Button = ({
 
   return (
     <Component className={classNames} {...props}>
-      <Typography variant="span" className="flex items-center justify-center gap-1">
-        {image && image}
-        {children}
-      </Typography>
+      {image && image}
+      {children}
     </Component>
   );
 };
