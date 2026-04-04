@@ -12,6 +12,8 @@ export type Field = {
   themeSize?: string;
   options?: { label: string; value: string }[]; // For select and radio types
   gridColSpan?: number; // Optional: for layout purposes
+  gridCols?: number;
+  fields?: Field[];
 };
 
 export type FieldRegistryType = 'text' | 'checkbox' | 'select' | 'radio';
