@@ -60,7 +60,7 @@ const themeStyles: Record<ButtonTheme, string> = {
   success:
     'border border-transparent px-3 py-1 bg-emerald-400 text-neutral-900 t tracking-tighter font-medium hover:bg-emerald-500 hover:border-emerald-400',
   warning:
-    'border border-transparent px-3 py-1 bg-orange-700 text-white t tracking-tighter font-medium hover:bg-orange-600 hover:border-primary',
+    'border border-red-200 bg-red-50 px-3 py-1 text-red-700 tracking-tight font-semibold rounded-full transition-all hover:bg-red-100 hover:border-red-300',
   ghost: 'px-3 py-1 bg-transparent text-gray-700 tracking-tighter font-medium',
 };
 

@@ -1,133 +1,151 @@
-// 'use client';
-// import Button from '@/components/ui/Button';
-// import Heading from '@/components/ui/Heading';
-// import Typography from '@/components/ui/Typography';
-// import { useMemo, useState } from 'react';
-// import { Template, FilterState, FilterCategory } from '../_constants/templates.types';
-// import { ChevronDown, X } from 'lucide-react';
-// const templateList: Template[] = [
-//     {
-//         id: 1,
-//         name: 'Modern Pro',
-//         structure: 'Chronological',
-//         design: 'Modern',
-//         layout: 'Two Column',
-//     },
-//     {
-//         id: 2,
-//         name: 'Classic Professional',
-//         structure: 'Chronological',
-//         design: 'Professional',
-//         layout: 'One Column',
-//     },
-//     {
-//         id: 3,
-//         name: 'Creative Edge',
-//         structure: 'Combination',
-//         design: 'Creative',
-//         layout: 'Mixed',
-//     },
-//     {
-//         id: 4,
-//         name: 'Minimal Simple',
-//         structure: 'Functional',
-//         design: 'Simple',
-//         layout: 'One Column',
-//     },
-//     {
-//         id: 5,
-//         name: 'Modern Compact',
-//         structure: 'Chronological',
-//         design: 'Modern',
-//         layout: 'Two Column',
-//     },
-// ];
-// const filterCategories: FilterCategory[] = ['structure', 'design', 'layout'];
+'use client';
 
-// export default function Templates() {
-//     const [filters, setFilters] = useState({
-//         structure: [],
-//         design: [],
-//         layout: [],
-//     });
+import { useMemo, useState } from 'react';
+import { ChevronDown, RotateCcw, X } from 'lucide-react';
+import Button from '@/components/ui/Button';
+import Heading from '@/components/ui/Heading';
+import Typography from '@/components/ui/Typography';
+import {
+  templateList,
+  FilterState,
+  FilterCategory,
+  FILTER_CONFIG,
+} from '../_constants/templates.types';
+import SuggestTemplateWizard from '../_components/SuggestTemplateWizard';
 
-//     const toggleFilter = (category: FilterCategory, value: string) => {
-//         setFilters((prev) => {
-//             const list = prev[category];
-//             return {
-//                 ...prev,
-//                 [category]: list.includes(value)
-//                     ? list.filter((v) => v !== value)
-//                     : [...list, value],
-//             };
-//         });
-//     };
-//     const filteredTemplates = useMemo(() => {
-//         return templateList.filter((t) => {
-//             const structureMatch =
-//                 filters.structure.length === 0 ||
-//                 filters.structure.includes(t.structure);
-//             const designMatch =
-//                 filters.design.length === 0 || filters.design.includes(t.design);
-//             const layoutMatch =
-//                 filters.layout.length === 0 || filters.layout.includes(t.layout);
-//             return structureMatch && designMatch && layoutMatch;
-//         });
-//     }, [filters]);
-
-//     const activeFilterCount = filters.structure.length + filters.design.length + filters.layout.length;
-
-//     return (
-//         <div className="p-4">
-//             <div className="flex items-center justify-between mb-6">
-//                 <div>
-//                     <Heading variant="h5" className="text-primary mb-2">
-//                         Templates Library
-//                     </Heading>
-//                     <Typography variant="span" size='xs' className="text-muted-foreground">
-//                         Pick a layout that best showcases your career path
-//                     </Typography>
-//                 </div>
-
-//                 <Button size="base" className='w-full max-w-xs' >
-//                     Suggest Template
-//                 </Button>
-//             </div>
-//             <div className='sticky top-0 z-20 mb-10 border-y border-border bg-background/95 py-1'>
-//                 <div className='flex flex-wrap items-center gap-6'>
-//                     <div className='mr-4 flex items-center gap-2 border-r border-border pr-6 text-sm font-semibold'>
-//                         <Typography variant='span' className='flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white'>
-//                             {activeFilterCount}
-//                         </Typography>
-//                         Filters
-//                     <div>
-//   {filterOptions[category].map((option) => (
-//     <label
-//       key={option}
-//       className={`hover:bg-muted flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
-//         filters[category].includes(option)
-//           ? 'bg-primary font-semibold text-primary'
-//           : ''
-//       }`}
-//     >
-//       {option}
-
-//       <input
-//         type='checkbox'
-//         className='hidden'
-//         checked={filters[category].includes(option)}
-//         onChange={() => toggleFilter(category, option)}
-//       />
-
-//       {filters[category].includes(option) && <X size={14} />}
-//     </label>
-//   ))}
-// </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
 export default function Templates() {
-  return <div>templates page</div>;
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    structure: [],
+    design: [],
+    layout: [],
+  });
+
+  const resetFilters = () => setFilters({ structure: [], design: [], layout: [] });
+
+  const toggleFilter = (category: FilterCategory, value: string) => {
+    setFilters((prev) => {
+      const list = prev[category] as string[];
+      const newList = list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+
+      return { ...prev, [category]: newList };
+    });
+  };
+
+  const filteredTemplates = useMemo(() => {
+    return templateList.filter((t) => {
+      const structureMatch = !filters.structure.length || filters.structure.includes(t.structure);
+      const designMatch = !filters.design.length || filters.design.includes(t.design);
+      const layoutMatch = !filters.layout.length || filters.layout.includes(t.layout);
+      return structureMatch && designMatch && layoutMatch;
+    });
+  }, [filters]);
+
+  const activeFilterCount =
+    filters.structure.length + filters.design.length + filters.layout.length;
+
+  return (
+    <div className="mx-auto max-w-7xl p-4">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <Heading variant="h5" className="text-primary mb-2">
+            Templates Library
+          </Heading>
+          <Typography variant="span" size="xs" className="text-muted-foreground">
+            Pick a layout that best showcases your career path
+          </Typography>
+        </div>
+        <Button size="base" className="max-w-xs" onClick={() => setIsWizardOpen(true)}>
+          Suggest Template
+        </Button>
+      </div>
+
+      <div className="border-border bg-background/95 sticky top-0 z-20 mb-10 border-y py-2">
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="border-border flex items-center gap-2 border-r pr-6 text-sm font-semibold">
+            <span className="bg-primary flex h-5 w-5 items-center justify-center rounded-full text-[10px] text-white">
+              {activeFilterCount}
+            </span>
+            Filters
+          </div>
+
+          {(Object.keys(FILTER_CONFIG) as FilterCategory[]).map((category) => (
+            <div key={category} className="group relative">
+              <button className="hover:text-primary flex items-center gap-2 text-sm font-medium capitalize transition-colors">
+                {category}
+                <ChevronDown size={14} />
+              </button>
+              <div className="border-border absolute top-full left-0 mt-2 hidden w-56 flex-col rounded-xl border bg-white p-2 shadow-xl group-hover:flex">
+                {FILTER_CONFIG[category].map((option) => {
+                  const isSelected = (filters[category] as string[]).includes(option);
+                  return (
+                    <label
+                      key={option}
+                      className={`hover:bg-muted flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
+                        isSelected ? 'bg-primary/10 text-primary font-semibold' : ''
+                      }`}
+                    >
+                      {option}
+                      <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={isSelected}
+                        onChange={() => toggleFilter(category, option)}
+                      />
+                      {isSelected && <X size={14} />}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {activeFilterCount > 0 && (
+            <Button
+              onClick={resetFilters}
+              theme="warning"
+              size="xs"
+              className="flex w-fit items-center capitalize"
+            >
+              <RotateCcw size={12} className="mr-1" /> Reset All
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {filteredTemplates.map((template) => (
+          <div
+            key={template.id}
+            className="group border-border hover:border-primary relative flex flex-col rounded-2xl border p-4 transition-all hover:shadow-xl"
+          >
+            <div className="relative mb-5 aspect-3/4 w-full overflow-hidden rounded-lg bg-gray-100">
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                <Button size="sm">Use Template</Button>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <Heading variant="h6">{template.name}</Heading>
+              <span className="text-muted-foreground text-[10px] font-bold uppercase">
+                {template.design}
+              </span>
+            </div>
+            <Typography variant="p" className="text-muted-foreground mt-1 text-xs">
+              {template.structure} • {template.layout}
+            </Typography>
+          </div>
+        ))}
+      </div>
+      {filteredTemplates.length === 0 && (
+        <div className="flex flex-col items-center py-20 text-center">
+          <Heading variant="h4">No matches found</Heading>
+          <p className="text-muted-foreground">Try clearing your filters.</p>
+        </div>
+      )}
+      <SuggestTemplateWizard
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onApplyFilters={(recommended) => setFilters(recommended)}
+      />
+    </div>
+  );
 }
