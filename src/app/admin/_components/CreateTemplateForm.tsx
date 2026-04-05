@@ -43,41 +43,43 @@ function buildDefaultValuesFromSchema(sections: Section[]) {
 
 export const templateFormSchema: Section[] = [
   {
-    name: 'Template Information',
+    name: 'template',
+    label: 'Template Information',
     gridCols: 2,
+    type: 'object',
     fields: [
       {
-        name: 'template.name',
+        name: 'name',
         label: 'Template Name',
         type: 'text',
         themeSize: 'xs',
         gridColSpan: 1,
       },
       {
-        name: 'template.slug',
+        name: 'slug',
         label: 'Template ID / Slug',
         type: 'text',
         themeSize: 'xs',
         gridColSpan: 1,
       },
       {
-        name: 'template.description',
+        name: 'description',
         label: 'Description',
         type: 'textarea',
         themeSize: 'xs',
         gridColSpan: 2,
       },
-      { name: 'template.ats', label: 'ATS Friendly', type: 'checkbox', gridColSpan: 1 },
-      //   { name: 'template.preview', label: 'Upload preview image', type: 'file' },
-      { name: 'template.isActive', label: 'Active Template', type: 'checkbox', gridColSpan: 1 },
+      { name: 'ats', label: 'ATS Friendly', type: 'checkbox', gridColSpan: 1 },
+      //   { name: 'preview', label: 'Upload preview image', type: 'file' },
+      { name: 'isActive', label: 'Active Template', type: 'checkbox', gridColSpan: 1 },
       {
-        name: 'template.supportsProfilePhoto',
+        name: 'supportsProfilePhoto',
         label: 'Supports profile photo',
         type: 'checkbox',
         gridColSpan: 1,
       },
       {
-        name: 'template.structure',
+        name: 'structure',
         label: 'Structure Type',
         type: 'select',
         options: [
@@ -88,7 +90,7 @@ export const templateFormSchema: Section[] = [
         gridColSpan: 1,
       },
       {
-        name: 'template.design',
+        name: 'design',
         label: 'Design Style',
         type: 'select',
         options: [
@@ -100,7 +102,7 @@ export const templateFormSchema: Section[] = [
         gridColSpan: 1,
       },
       {
-        name: 'template.layout',
+        name: 'layout',
         label: 'Layout Type',
         type: 'select',
         options: [
@@ -122,10 +124,12 @@ export const templateFormSchema: Section[] = [
   },
 
   {
-    name: 'Typography Settings',
+    name: 'typography',
+    label: 'Typography Settings',
+    type: 'object',
     fields: [
       {
-        name: 'typography.headingFont',
+        name: 'headingFont',
         label: 'Heading Font',
         type: 'select',
         options: [
@@ -137,7 +141,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'typography.bodyFont',
+        name: 'bodyFont',
         label: 'Body Font',
         type: 'select',
         options: [
@@ -149,7 +153,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'typography.headingPrimary.size',
+        name: 'headingPrimary.size',
         label: 'Primary Heading Size',
         type: 'select',
         options: [
@@ -163,7 +167,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'typography.headingPrimary.case',
+        name: 'headingPrimary.case',
         label: 'Primary Heading Case',
         type: 'select',
         options: [
@@ -173,7 +177,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'typography.headingSecondary.size',
+        name: 'headingSecondary.size',
         label: 'Secondary Heading Size',
         type: 'select',
         options: [
@@ -186,7 +190,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'typography.headingSecondary.case',
+        name: 'headingSecondary.case',
         label: 'Secondary Heading Case',
         type: 'select',
         options: [
@@ -196,7 +200,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'typography.body.size',
+        name: 'body.size',
         label: 'Body Text Size',
         type: 'select',
         options: [
@@ -208,7 +212,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'typography.body.lineHeight',
+        name: 'body.lineHeight',
         label: 'Body Line Height',
         type: 'select',
         options: [
@@ -219,7 +223,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'typography.body.listLineHeight',
+        name: 'body.listLineHeight',
         label: 'List Line Height',
         type: 'select',
         options: [
@@ -232,15 +236,19 @@ export const templateFormSchema: Section[] = [
   },
 
   {
-    name: 'Color System',
-    fields: [{ name: 'colors.accent', label: 'Accent Color', type: 'color' }],
+    name: 'colors',
+    label: 'Color System',
+    type: 'object',
+    fields: [{ name: 'accent', label: 'Accent Color', type: 'color' }],
   },
 
   {
-    name: 'Page Setup',
+    name: 'page',
+    label: 'Page Setup',
+    type: 'object',
     fields: [
       {
-        name: 'page.paperSize',
+        name: 'paperSize',
         label: 'Paper Size',
         type: 'select',
         options: [
@@ -249,7 +257,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'page.margins.topBottom',
+        name: 'margins.topBottom',
         label: 'Margin Top & Bottom',
         type: 'select',
         options: [
@@ -262,7 +270,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'page.margins.leftRight',
+        name: 'margins.leftRight',
         label: 'Margin Left & Right',
         type: 'select',
         options: [
@@ -274,7 +282,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'page.borders.topBottom',
+        name: 'borders.topBottom',
         label: 'Border Top & Bottom',
         type: 'select',
         options: [
@@ -286,7 +294,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'page.borders.allSides',
+        name: 'borders.allSides',
         label: 'Border',
         type: 'select',
         options: [
@@ -300,10 +308,12 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Design Elements',
+    name: 'design',
+    label: 'Design Elements',
+    type: 'object',
     fields: [
       {
-        name: 'design.lines.enabled',
+        name: 'lines.enabled',
         label: 'Enable Lines',
         type: 'select',
         options: [
@@ -312,7 +322,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'design.lines.thickness',
+        name: 'lines.thickness',
         label: 'Line Thickness',
         type: 'select',
         options: [
@@ -322,7 +332,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'design.lines.style',
+        name: 'lines.style',
         label: 'Line Style',
         type: 'select',
         options: [
@@ -332,7 +342,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'design.bullets.type',
+        name: 'bullets.type',
         label: 'Bullet Points',
         type: 'select',
         options: [
@@ -343,7 +353,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       {
-        name: 'design.bullets.size',
+        name: 'bullets.size',
         label: 'Bullet Size',
         type: 'select',
         options: [
@@ -357,7 +367,7 @@ export const templateFormSchema: Section[] = [
         ],
       },
       // {
-      //   name: 'design.separator',
+      //   name: 'separator',
       //   label: 'Section Separator',
       //   type: 'select',
       //   options: [
@@ -370,10 +380,12 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Date Format',
+    name: 'date',
+    label: 'Date Format',
+    type: 'object',
     fields: [
       {
-        name: 'date.format',
+        name: 'format',
         label: 'Date Format',
         type: 'select',
         options: [
@@ -388,10 +400,12 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Header Configuration',
+    name: 'header',
+    label: 'Header Configuration',
+    type: 'object',
     fields: [
       {
-        name: 'header.name.alignment',
+        name: 'name.alignment',
         label: 'Name Alignment',
         type: 'select',
         options: [
@@ -402,7 +416,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'header.role.visible', // changed from targetTitle to role
+        name: 'role.visible', // changed from targetTitle to role
         label: 'Show Role / Designation',
         type: 'select',
         options: [
@@ -412,7 +426,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'header.role.alignment',
+        name: 'role.alignment',
         label: 'Role / Designation Alignment',
         type: 'select',
         options: [
@@ -423,7 +437,7 @@ export const templateFormSchema: Section[] = [
       },
 
       {
-        name: 'header.contact.alignment',
+        name: 'contact.alignment',
         label: 'Contact Info Alignment',
         type: 'select',
         options: [
@@ -435,7 +449,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Skills',
+    name: 'skills',
+    label: 'Skills',
+    type: 'object',
     fields: [
       {
         name: 'layout',
@@ -462,7 +478,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Certifications',
+    name: 'certifications',
+    label: 'Certifications',
+    type: 'object',
     fields: [
       {
         name: 'layout',
@@ -500,7 +518,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Education',
+    name: 'education',
+    label: 'Education',
+    type: 'object',
     fields: [
       {
         name: 'primary_display',
@@ -547,7 +567,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Experience',
+    name: 'experience',
+    label: 'Experience',
+    type: 'object',
     fields: [
       {
         name: 'location_placement',
@@ -581,7 +603,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Languages',
+    name: 'languages',
+    label: 'Languages',
+    type: 'object',
     fields: [
       {
         name: 'layout',
@@ -615,7 +639,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Projects',
+    name: 'projects',
+    label: 'Projects',
+    type: 'object',
     fields: [
       {
         name: 'tech_stack',
@@ -659,7 +685,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Publications',
+    name: 'publications',
+    label: 'Publications',
+    type: 'object',
     fields: [
       {
         name: 'layout',
@@ -689,7 +717,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Volunteering & Leadership',
+    name: 'volunteer',
+    label: 'Volunteering & Leadership',
+    type: 'object',
     fields: [
       {
         name: 'layout',
@@ -727,7 +757,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Awards & Scholarships',
+    name: 'awards',
+    label: 'Awards & Scholarships',
+    type: 'object',
     fields: [
       {
         name: 'layout',
@@ -760,7 +792,9 @@ export const templateFormSchema: Section[] = [
     ],
   },
   {
-    name: 'Interests / Hobbies',
+    name: 'interests',
+    label: 'Interests / Hobbies',
+    type: 'object',
     fields: [
       {
         name: 'layout',
