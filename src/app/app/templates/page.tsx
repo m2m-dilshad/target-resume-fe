@@ -1,27 +1,57 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronDown, RotateCcw, X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Heading from '@/components/ui/Heading';
 import Typography from '@/components/ui/Typography';
 import {
-  templateList,
   FilterState,
   FilterCategory,
   FILTER_CONFIG,
+  Template,
 } from '../_constants/templates.types';
 import SuggestTemplateWizard from '../_components/SuggestTemplateWizard';
+import { fetchTemplates } from '@/actions/app/templates.actions';
+import PaginationControls from '../_components/PaginationControls';
 
 export default function Templates() {
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [loading, setLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     structure: [],
     design: [],
     layout: [],
   });
+  const [page, setPage] = useState(1);
+  const limit = 8;
+  const resetFilters = () => {
+    setFilters({ structure: [], design: [], layout: [] });
+    setPage(1);
+  };
 
-  const resetFilters = () => setFilters({ structure: [], design: [], layout: [] });
+  useEffect(() => {
+    const loadTemplates = async () => {
+      setLoading(true);
+
+      const offset = (page - 1) * limit;
+
+      const res = await fetchTemplates({
+        offset,
+        limit,
+        filters,
+      });
+
+      if (res.success) {
+        setTemplates(res.data || []);
+      }
+
+      setLoading(false);
+    };
+
+    loadTemplates();
+  }, [filters, page]);
 
   const toggleFilter = (category: FilterCategory, value: string) => {
     setFilters((prev) => {
@@ -30,20 +60,19 @@ export default function Templates() {
 
       return { ...prev, [category]: newList };
     });
+    setPage(1);
   };
-
-  const filteredTemplates = useMemo(() => {
-    return templateList.filter((t) => {
-      const structureMatch = !filters.structure.length || filters.structure.includes(t.structure);
-      const designMatch = !filters.design.length || filters.design.includes(t.design);
-      const layoutMatch = !filters.layout.length || filters.layout.includes(t.layout);
-      return structureMatch && designMatch && layoutMatch;
-    });
-  }, [filters]);
 
   const activeFilterCount =
     filters.structure.length + filters.design.length + filters.layout.length;
 
+  if (loading) {
+    return (
+      <Typography variant="p" className="py-10 text-center">
+        Loading templates...
+      </Typography>
+    );
+  }
   return (
     <div className="mx-auto max-w-7xl p-4">
       <div className="mb-6 flex items-center justify-between">
@@ -112,8 +141,9 @@ export default function Templates() {
           )}
         </div>
       </div>
+
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {filteredTemplates.map((template) => (
+        {templates.map((template) => (
           <div
             key={template.id}
             className="group border-border hover:border-primary relative flex flex-col rounded-2xl border p-4 transition-all hover:shadow-xl"
@@ -135,12 +165,18 @@ export default function Templates() {
           </div>
         ))}
       </div>
-      {filteredTemplates.length === 0 && (
+      {templates.length === 0 && (
         <div className="flex flex-col items-center py-20 text-center">
           <Heading variant="h4">No matches found</Heading>
           <p className="text-muted-foreground">Try clearing your filters.</p>
         </div>
       )}
+      <PaginationControls
+        page={page}
+        onPrev={() => setPage((p) => Math.max(p - 1, 1))}
+        onNext={() => setPage((p) => p + 1)}
+        hasNext={templates.length === limit}
+      />
       <SuggestTemplateWizard
         isOpen={isWizardOpen}
         onClose={() => setIsWizardOpen(false)}
