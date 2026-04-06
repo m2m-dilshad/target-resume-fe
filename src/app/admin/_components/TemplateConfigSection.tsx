@@ -33,16 +33,23 @@ export default function TemplateConfigSection<T extends FieldValues>({
       {/* Section Body */}
       <div
         className={cn(
-          'border-border grid gap-4 border-t px-6 py-5',
-          { hidden: !isOpen },
-          section.gridCols ? `grid-cols-${section.gridCols}` : ''
+          'border-border grid grid-cols-[repeat(var(--tpl-section-cols),minmax(0,1fr))] gap-4 border-t px-6 py-5',
+          { hidden: !isOpen }
         )}
+        style={{ '--tpl-section-cols': section.gridCols || '1' } as React.CSSProperties}
       >
         {section.fields.map((field: Field) => {
           return (
             <div
               key={`template-wrapper-field-${field.name}`}
-              className={cn('space-y-1', field.gridColSpan ? `col-span-${field.gridColSpan}` : '')}
+              className={cn('space-y-1')}
+              style={
+                {
+                  'grid-column': field.gridColSpan
+                    ? `span ${field.gridColSpan}/span ${field.gridColSpan}`
+                    : 'auto',
+                } as React.CSSProperties
+              }
             >
               <FormField<T> key={field.name} field={field} />
             </div>
