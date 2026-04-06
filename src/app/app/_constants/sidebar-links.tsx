@@ -57,7 +57,7 @@ export const SidebarLinksList: SidebarLinkType[] = [
   {
     id: 'templates',
     name: 'Templates',
-    href: '/app/resume-templates',
+    href: '/app/templates',
     icon: Layers,
   },
   { id: 'settings', name: 'Settings', href: '/app/settings', icon: Settings },

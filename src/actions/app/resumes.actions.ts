@@ -6,8 +6,9 @@ export async function createResumeAction(data: CreateResumeType): Promise<Action
   const result = createResumeSchema.safeParse(data);
 
   if (!result.success) {
+    console.log('Validation errors:', result.error.format());
     return { success: false, errors: z.flattenError(result.error).fieldErrors };
   }
-
+  console.log('Create resume action data: ', data);
   return { success: true };
 }

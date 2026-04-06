@@ -2,12 +2,12 @@
 import FormWrapper, { SubmitButton } from '@/components/forms/FormWrapper';
 import { ActionResponse } from '@/types/action.types';
 import { Section } from '@/types/template.types';
-import TemplateConfigSection from './TemplateConfigSection';
 import { createResumeSchema, CreateResumeType } from '@/schemas/resume.schema';
 import { createResumeAction } from '@/actions/app/resumes.actions';
-import { emptyFormValues } from '../_constants/mock-data';
+import { mockResumeData } from '../_constants/mock-data';
+import ResumeConfigSection from './ResumeConfigSection';
 
-export const templateFormSchema: Section[] = [
+export const resumeFormSchema: Section[] = [
   {
     name: 'basics',
     label: 'Basic Information',
@@ -18,7 +18,8 @@ export const templateFormSchema: Section[] = [
       { name: 'label', label: 'Current Job Title', type: 'text', gridColSpan: 1 },
       { name: 'profilePicture', label: 'Profile Photo', type: 'file', gridColSpan: 1 },
       { name: 'email', label: 'Email Address', type: 'email', gridColSpan: 1 },
-      { name: 'phone', label: 'Phone Number', type: 'text', gridColSpan: 1 },
+      { name: 'phone.countryCode', label: 'Phone Country Code', type: 'text', gridColSpan: 1 },
+      { name: 'phone.number', label: 'Phone Number', type: 'text', gridColSpan: 1 },
       { name: 'portfolio', label: 'Portfolio Link', type: 'text', gridColSpan: 1 },
       { name: 'summary', label: 'Professional Summary', type: 'textarea', gridColSpan: 2 },
       { name: 'location.address', label: 'Address', type: 'text' },
@@ -326,7 +327,7 @@ export const templateFormSchema: Section[] = [
   },
 ];
 
-const initialTemplateFormValues = emptyFormValues as Partial<CreateResumeType>;
+const initialTemplateFormValues = mockResumeData as Partial<CreateResumeType>;
 
 export default function CreateResumeForm() {
   const handleSubmitCallback = (response: ActionResponse) => {
@@ -347,8 +348,8 @@ export default function CreateResumeForm() {
           submitButton={<SubmitButton submitLabel="Create Resume" className="mt-2" />}
           submitCallback={handleSubmitCallback}
         >
-          {templateFormSchema.map((section) => (
-            <TemplateConfigSection<CreateResumeType> key={section.name} section={section} />
+          {resumeFormSchema.map((section) => (
+            <ResumeConfigSection<CreateResumeType> key={section.name} section={section} />
           ))}
         </FormWrapper>
       </div>

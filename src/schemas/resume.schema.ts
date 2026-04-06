@@ -1,49 +1,142 @@
 import { z } from 'zod';
-export const createProfileSchema = z.object({
-  network: z.string().min(1, 'Network is required'),
-  username: z.string().min(1, 'Username is required'),
-  url: z.string().min(1, 'URL is required'),
-});
+
+const requiredString = (field: string) => z.string().trim().min(1, `${field} is required`);
+
+const optionalString = z
+  .string()
+  .trim()
+  .transform((val) => (val === '' ? undefined : val))
+  .optional();
+
+const maxWords = (limit: number) => (val?: string) => {
+  if (!val) return true;
+
+  const count = val.trim().split(/\s+/).length;
+  return count <= limit;
+};
+
+const isValidDate = (val: string) => {
+  if (!/^\d{2}-\d{2}-\d{4}$/.test(val)) return false;
+  const [dd, mm, yyyy] = val.split('-').map(Number);
+  const date = new Date(yyyy, mm - 1, dd);
+  return date.getFullYear() === yyyy && date.getMonth() === mm - 1 && date.getDate() === dd;
+};
+const dateValidator = (field?: string, required = false) => {
+  const message = field ? `${field} must be a valid date (YYYY-MM-DD)` : 'Invalid date';
+
+  if (required) {
+    return z.string().trim().min(1, `${field} is required`).refine(isValidDate, { message });
+  }
+
+  return z
+    .string()
+    .trim()
+    .transform((val) => (val === '' ? undefined : val))
+    .refine((val) => !val || isValidDate(val), { message })
+    .optional();
+};
+
+const optionalStringWithMaxWords = (limit: number, field: string) =>
+  optionalString.refine(maxWords(limit), {
+    message: `${field} must be under ${limit} words`,
+  });
+
+const isValidUrl = (val: string) => {
+  try {
+    new URL(val);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const urlValidator = (field?: string, required = false) => {
+  const base = z.string().trim();
+
+  if (required) {
+    return base.min(1, `${field} is required`).refine((val) => isValidUrl(val), {
+      message: `${field} must be a valid URL`,
+    });
+  }
+
+  return base
+    .transform((val) => (val === '' ? undefined : val))
+    .refine((val) => !val || isValidUrl(val), {
+      message: field ? `${field} must be a valid URL` : 'Invalid URL',
+    })
+    .optional();
+};
 
 export const createResumeSchema = z.object({
   basics: z.object({
-    name: z.string().min(1, 'Full Name is required'),
-    label: z.string().min(1, 'Current Job Title is required'),
-    profilePicture: z.string().optional(),
-    email: z.string().email('Invalid email'),
-    phone: z.string().min(1, 'Phone Number required'),
-    portfolio: z.string().optional(),
-    summary: z.string().optional(),
+    name: requiredString('Full Name'),
+    label: requiredString('Current Job Title'),
+    profilePicture: optionalString,
+    email: z.string().trim().toLowerCase().email('Please enter a valid email address.'),
+    //Future aspect: Use a country config map to validate country code with phone number length
+    phone: z.object({
+      countryCode: z
+        .string()
+        .trim()
+        .regex(/^\+\d{1,4}$/, 'Invalid country code (e.g. +91)'),
+
+      number: z
+        .string()
+        .trim()
+        .min(7, 'Phone number too short')
+        .max(12, 'Phone number too long')
+        .regex(/^\d+$/, 'Phone number must contain only digits'),
+    }),
+
+    portfolio: urlValidator('Portfolio URL', false),
+    summary: optionalStringWithMaxWords(200, 'Summary'),
     location: z.object({
-      address: z.string().min(1, 'Street Address required'),
-      postalCode: z.string().optional(),
-      city: z.string().min(1, 'City required'),
-      countryCode: z.string().min(1, 'Country required'),
-      region: z.string().min(1, 'State / Region required'),
+      address: requiredString('Street Address'),
+      postalCode: requiredString('PostalCode'),
+      city: requiredString('City'),
+      countryCode: z
+        .string()
+        .trim()
+        .length(2, 'Use ISO country code (e.g. IN, US)')
+        .transform((val) => val.toUpperCase()),
+      region: requiredString('State / Region'),
     }),
     profiles: z
       .array(
         z.object({
-          network: z.string().min(1, 'Platform required'),
-          username: z.string().min(1, 'Username required'),
-          url: z.string().optional(),
+          network: requiredString('Platform'),
+
+          username: optionalString,
+
+          url: urlValidator('URL', true),
         })
       )
+      .max(5, 'Maximum 5 profiles allowed')
       .optional(),
   }),
 
   works: z
     .array(
       z.object({
-        company: z.string().min(1, 'Company Name required'),
-        position: z.string().min(1, 'Job Title required'),
-        location: z.string().optional(),
-        url: z.string().optional(),
-        startDate: z.string().min(1, 'Start Date required'),
-        endDate: z.string().optional(),
-        summary: z.string().optional(),
+        company: requiredString('Company Name'),
+
+        position: requiredString('Job Title'),
+
+        location: optionalString,
+
+        url: urlValidator('Company URL', false),
+
+        startDate: dateValidator('Start Date', true),
+
+        endDate: dateValidator('End Date', false),
+        summary: optionalStringWithMaxWords(500, 'Summary'),
+
         highlights: z
-          .array(z.object({ highlights: z.string().min(1, 'Achievement required') }))
+          .array(
+            z.object({
+              highlights: requiredString('Achievement'),
+            })
+          )
           .optional(),
       })
     )
@@ -52,17 +145,24 @@ export const createResumeSchema = z.object({
   educations: z
     .array(
       z.object({
-        institution: z.string().min(1, 'School / University required'),
-        url: z.string().optional(),
+        institution: requiredString('School / University'),
+        url: urlValidator('Institution URL', false),
         degreeType: z.enum(['Undergraduate', 'Bachelors', 'Masters', 'Diploma', 'PhD']),
-        degree: z.string().min(1, 'Degree & Major required'),
-        gpa: z.string().optional(),
-        location: z.string().optional(),
-        startDate: z.string().min(1, 'Start Date required'),
-        endDate: z.string().optional(),
-        courses: z
-          .array(z.object({ course: z.string().min(1, 'Course Name required') }))
-          .optional(),
+        degree: requiredString('Degree & Major required'),
+        gpa: optionalString.refine(
+          (val) => {
+            if (!val) return true;
+            const num = Number(val);
+            return !isNaN(num) && num >= 0 && num <= 10;
+          },
+          {
+            message: 'GPA must be between 0 and 10',
+          }
+        ),
+        location: optionalString,
+        startDate: dateValidator('Start date', true),
+        endDate: dateValidator('End date', false),
+        courses: z.array(z.object({ course: requiredString('Course Name required') })).optional(),
       })
     )
     .optional(),
@@ -70,9 +170,9 @@ export const createResumeSchema = z.object({
   skills: z
     .array(
       z.object({
-        name: z.string().min(1, 'Skill required'),
-        level: z.string().min(1, 'Proficiency required'),
-        keywords: z.array(z.object({ keywords: z.string().min(1, 'Keyword required') })).optional(),
+        name: requiredString('Skill'),
+        level: requiredString('Proficiency'),
+        keywords: z.array(z.object({ keywords: requiredString('Keyword required') })).optional(),
       })
     )
     .optional(),
@@ -80,18 +180,14 @@ export const createResumeSchema = z.object({
   projects: z
     .array(
       z.object({
-        name: z.string().min(1, 'Project Name required'),
-        url: z.string().optional(),
-        description: z.string().min(1, 'Project Description required'),
-        highlights: z
-          .array(z.object({ highlights: z.string().min(1, 'Feature required') }))
-          .optional(),
-        techStack: z
-          .array(z.object({ techStack: z.string().min(1, 'Technology required') }))
-          .optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        roles: z.string().optional(),
+        name: requiredString('Project Name'),
+        url: urlValidator('URL', false),
+        description: optionalStringWithMaxWords(250, 'Description'),
+        highlights: z.array(z.object({ highlights: requiredString('Feature') })).optional(),
+        techStack: z.array(z.object({ techStack: requiredString('Technology') })).optional(),
+        startDate: dateValidator('Start date', false),
+        endDate: dateValidator('End date', false),
+        roles: optionalString,
       })
     )
     .optional(),
@@ -99,10 +195,10 @@ export const createResumeSchema = z.object({
   certifications: z
     .array(
       z.object({
-        name: z.string().min(1, 'Certificate Name required'),
-        issuer: z.string().optional(),
-        date: z.string().optional(),
-        url: z.string().optional(),
+        name: requiredString('Certificate Name required'),
+        issuer: optionalString,
+        date: optionalString,
+        url: urlValidator('URL', false),
       })
     )
     .optional(),
@@ -110,7 +206,7 @@ export const createResumeSchema = z.object({
   languages: z
     .array(
       z.object({
-        language: z.string().min(1, 'Language required'),
+        language: requiredString('Language'),
         fluency: z.enum(['Beginner', 'Intermediate', 'Professional', 'Fluent', 'Native']),
       })
     )
@@ -119,8 +215,8 @@ export const createResumeSchema = z.object({
   activities: z
     .array(
       z.object({
-        title: z.string().min(1, 'Activity Title required'),
-        description: z.string().optional(),
+        title: requiredString('Activity Title'),
+        description: optionalStringWithMaxWords(150, 'Description'),
       })
     )
     .optional(),
@@ -128,10 +224,10 @@ export const createResumeSchema = z.object({
   awards: z
     .array(
       z.object({
-        title: z.string().min(1, 'Award Title required'),
-        awarder: z.string().optional(),
-        date: z.string().optional(),
-        summary: z.string().optional(),
+        title: requiredString('Award Title'),
+        awarder: optionalString,
+        date: dateValidator('Date', true),
+        summary: optionalStringWithMaxWords(100, 'Summary'),
       })
     )
     .optional(),
@@ -139,15 +235,13 @@ export const createResumeSchema = z.object({
   volunteers: z
     .array(
       z.object({
-        organization: z.string().min(1, 'Organization Name required'),
-        position: z.string().min(1, 'Role / Title required'),
-        url: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        summary: z.string().optional(),
-        highlights: z
-          .array(z.object({ highlights: z.string().min(1, 'Contribution required') }))
-          .optional(),
+        organization: requiredString('Organization Name'),
+        position: requiredString('Role / Title'),
+        url: urlValidator('URL', false),
+        startDate: dateValidator('Start date', false),
+        endDate: dateValidator('End date', false),
+        summary: optionalStringWithMaxWords(150, 'Summary'),
+        highlights: z.array(z.object({ highlights: requiredString('Contribution') })).optional(),
       })
     )
     .optional(),
@@ -155,14 +249,13 @@ export const createResumeSchema = z.object({
   publications: z
     .array(
       z.object({
-        name: z.string().min(1, 'Publication Title required'),
-        publisher: z.string().optional(),
-        releaseDate: z.string().optional(),
-        url: z.string().optional(),
-        summary: z.string().min(1, 'Summary required'),
+        name: requiredString('Publication Title'),
+        publisher: optionalString,
+        releaseDate: dateValidator('Release date', false),
+        url: urlValidator('URL', false),
+        summary: optionalStringWithMaxWords(150, 'Summary'),
       })
     )
     .optional(),
 });
 export type CreateResumeType = z.infer<typeof createResumeSchema>;
-export type CreateProfileType = z.infer<typeof createProfileSchema>;
