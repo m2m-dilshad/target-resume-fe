@@ -84,7 +84,7 @@ export default function Templates() {
             Pick a layout that best showcases your career path
           </Typography>
         </div>
-        <Button size="base" className="max-w-xs" onClick={() => setIsWizardOpen(true)}>
+        <Button size="base" className="w-fit px-4" onClick={() => setIsWizardOpen(true)}>
           Suggest Template
         </Button>
       </div>
