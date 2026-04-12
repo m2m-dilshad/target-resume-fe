@@ -17,6 +17,7 @@ import {
   Download,
   Edit,
   FileText,
+  FileWarning,
   Filter,
   Plus,
   Square,
@@ -26,14 +27,27 @@ import {
 import { useEffect, useState } from 'react';
 import Search from '@/components/Search';
 import { useSearchParams } from 'next/navigation';
+import { getScoreColor } from '../utils/misc.functions';
+import RangeFilter from '@/components/RangeFilter';
+import DateRange from '@/components/DateRange';
+import ConfirmModal from '@/components/ConfirmModal';
+/* TODO:
+   3. Add route for editing resumes
+*/
 
 export default function MyResumesPage() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [toggleATS, setToggleATS] = useState(false);
+  const [toggleDate, setToggleDate] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
+  const atsScore = searchParams.get('atsScore') || '';
+  const startDate = searchParams.get('startDate') || '';
+  const endDate = searchParams.get('endDate') || '';
 
   useEffect(() => {
     let isActive = true;
@@ -45,8 +59,9 @@ export default function MyResumesPage() {
         const response = await fetchResumesAction({
           offset: 0,
           limit: 20,
-          searchParams: { query },
+          searchParams: { query, atsScore, startDate, endDate },
         });
+
         if (isActive && response.success && response.data) {
           setResumes(response.data);
         }
@@ -64,19 +79,11 @@ export default function MyResumesPage() {
     return () => {
       isActive = false;
     };
-  }, [query]);
+  }, [query, atsScore, startDate, endDate]);
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = () => {
     if (!selectedIds.size) return;
-
-    if (!confirm(`Delete ${selectedIds.size} resumes?`)) return;
-
-    const res = await deleteSelectedResumesAction(Array.from(selectedIds));
-
-    if (res.success && res.data) {
-      setResumes(res.data);
-      setSelectedIds(new Set());
-    }
+    setShowDeleteModal(true);
   };
 
   const handleDownload = async (ids: string[]) => {
@@ -85,6 +92,17 @@ export default function MyResumesPage() {
     if (res.success) {
       alert(`Downloaded ${res.data.length} resume(s)`);
     }
+  };
+
+  const confirmDelete = async () => {
+    const res = await deleteSelectedResumesAction(Array.from(selectedIds));
+
+    if (res.success && res.data) {
+      setResumes(res.data);
+      setSelectedIds(new Set());
+    }
+
+    setShowDeleteModal(false);
   };
 
   const toggleSelect = (id: string) => {
@@ -103,14 +121,14 @@ export default function MyResumesPage() {
     <div className="mx-auto max-w-7xl p-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <Heading variant="h5" className="text-primary mb-2">
+          <Heading variant="h3" className="text-primary mb-2">
             My Resumes
           </Heading>
           <Typography variant="span" size="xs" className="text-muted-foreground">
             Manage, edit and track all your resume versions.
           </Typography>
         </div>
-        <Button variant="link" href="app/resume-builder" className="flex w-fit items-center px-4">
+        <Button variant="link" href="/app/resume-builder" className="flex w-fit items-center px-4">
           <Plus size={16} className="mr-2" />
           Create New Resume
         </Button>
@@ -127,19 +145,85 @@ export default function MyResumesPage() {
               onClick={handleDeleteSelected}
               roundSize="sm"
               theme="warning"
-              className="flex items-center gap-2"
+              className="flex w-fit items-center gap-2 whitespace-nowrap"
             >
               <Trash2 size={18} />
               Delete ({selectedIds.size})
             </Button>
           )}
-          <button className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 font-medium text-gray-600 transition-colors hover:bg-gray-50">
-            <Filter size={18} />
-            Filters
-          </button>
+          <ConfirmModal
+            open={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={confirmDelete}
+            confirmText="Delete"
+          >
+            <div className="flex items-start gap-3">
+              <FileWarning className="text-warning" />
+              <div>
+                <Typography variant="p" size="sm" className="text-sm text-gray-700">
+                  You’re about to delete <span className="font-semibold">{selectedIds.size}</span>{' '}
+                  {selectedIds.size === 1 ? 'resume' : 'resumes'}.
+                </Typography>
+                <Typography variant="p" size="xs" className="mt-1 text-xs text-gray-500">
+                  This action is permanent and cannot be undone.
+                </Typography>
+              </div>
+            </div>
+          </ConfirmModal>
+
+          <div className="relative flex flex-wrap gap-2">
+            {/* Date Filter */}
+            <div className="relative">
+              <Button
+                theme="ghost"
+                onClick={() => {
+                  setToggleDate(!toggleDate);
+                  setToggleATS(false);
+                }}
+                className={`flex items-center gap-2 border border-gray-400 px-4 py-2 text-sm transition-all duration-150 ${
+                  toggleDate
+                    ? 'text-primary border-primary rounded-t-xl rounded-b-none bg-white shadow-sm ring-1 ring-gray-100'
+                    : 'rounded-xl bg-gray-50 text-gray-600 ring-1 ring-transparent hover:bg-white hover:shadow-sm hover:ring-gray-100'
+                }`}
+              >
+                <Filter size={18} />
+                Date
+              </Button>
+
+              {toggleDate && (
+                <div className="absolute top-full right-0 z-50 w-72 rounded-t-none rounded-b-2xl bg-white p-4 shadow-xl ring-1 ring-gray-100">
+                  <DateRange />
+                </div>
+              )}
+            </div>
+
+            {/* ATS Filter */}
+            <div className="relative">
+              <Button
+                theme="ghost"
+                onClick={() => {
+                  setToggleATS(!toggleATS);
+                  setToggleDate(false);
+                }}
+                className={`flex items-center gap-2 border border-gray-400 px-4 py-2 text-sm transition-all duration-150 ${
+                  toggleATS
+                    ? 'text-primary border-primary rounded-t-xl rounded-b-none bg-white shadow-sm ring-1 ring-gray-100'
+                    : 'rounded-xl bg-gray-50 text-gray-600 ring-1 ring-transparent hover:bg-white hover:shadow-sm hover:ring-gray-100'
+                }`}
+              >
+                <Filter size={18} />
+                ATS
+              </Button>
+
+              {toggleATS && (
+                <div className="absolute top-full right-0 z-50 w-72 rounded-t-none rounded-b-2xl bg-white p-4 shadow-xl ring-1 ring-gray-100">
+                  <RangeFilter />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
       <div className="mt-6 flex flex-col gap-3">
         {loading && (
           <Typography variant="span" size="sm" className="text-muted-foreground">
@@ -157,7 +241,7 @@ export default function MyResumesPage() {
           resumes.map((resume) => (
             <div
               key={resume.id}
-              className="hover:border-primary flex items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm"
+              className="group hover:border-primary flex items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white p-4 hover:shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <Button
@@ -171,7 +255,7 @@ export default function MyResumesPage() {
                     <Square size={22} />
                   )}
                 </Button>
-                <div className="group-hover:bg-primary group-hover:text-primary hidden h-12 w-12 items-center justify-center rounded-xl bg-gray-100 transition-colors sm:flex">
+                <div className="group-hover:bg-primary hidden h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-500 transition-all duration-200 group-hover:text-white sm:flex">
                   <FileText size={24} />
                 </div>
                 <div>
@@ -193,15 +277,13 @@ export default function MyResumesPage() {
                   <div className="text-[10px] font-bold tracking-tighter text-gray-400 uppercase">
                     ATS Match
                   </div>
-                  <div
-                    className={`text-xl font-black ${resume.score > 80 ? 'text-emerald-500' : 'text-amber-500'}`}
-                  >
+                  <div className={`text-xl font-black ${getScoreColor(resume.score)}`}>
                     {resume.score}%
                   </div>
                 </div>
                 <Button
                   variant="link"
-                  href="/app/resumes/edit"
+                  href="/app/resumes/edit/${resume.id}"
                   theme="ghost"
                   className="hover:text-primary w-fit rounded-lg p-2 text-gray-400 transition-all hover:bg-purple-50"
                   title="Edit"
@@ -211,7 +293,7 @@ export default function MyResumesPage() {
                 <Button
                   theme="ghost"
                   className="hover:text-primary w-fit rounded-lg p-2 text-gray-400 transition-all hover:bg-purple-50"
-                  title="Edit"
+                  title="Download"
                   onClick={() => handleDownload([resume.id])}
                 >
                   <Download size={18} />

@@ -43,7 +43,7 @@ interface ButtonProps extends React.HTMLAttributes<HTMLElement> {
 const sizeStyles: Record<ButtonSize, string> = {
   xs: `text-base scale-[0.8] w-[125%] origin-left`,
   sm: `text-base scale-[0.875] w-[114.28%] origin-left`,
-  base: `text-base max-sm:scale-[0.875] max-sm:w-[114.28%] max-sm:origin-left lg:text-lg`, //default final one
+  base: `text-base max-sm:scale-[0.875] max-sm:w-[114.28%] max-sm:origin-left lg:text-lg`,
   lg: 'text-lg md:text-xl lg:text-2xl',
   xl: 'text-xl md:text-2xl lg:text-3xl font-bold',
   '2xl': 'text-2xl md:text-3xl lg:text-4xl font-extrabold',

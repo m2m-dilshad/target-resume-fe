@@ -1,7 +1,10 @@
+'use server';
 import { createResumeSchema, CreateResumeType } from '@/schemas/resume.schema';
 import { ActionResponse } from '@/types/action.types';
-import { Resume } from '@/types/resume.types';
 import { z } from 'zod';
+import fs from 'fs';
+import path from 'path';
+import { CURRENT_RESUMES } from '@/app/app/utils/misc.data';
 
 export async function createResumeAction(data: CreateResumeType): Promise<ActionResponse> {
   const result = createResumeSchema.safeParse(data);
@@ -13,37 +16,31 @@ export async function createResumeAction(data: CreateResumeType): Promise<Action
   console.log('Create resume action data: ', data);
   return { success: true };
 }
-let CURRENT_RESUMES: Resume[] = [
-  {
-    id: '1',
-    title: 'Senior Software Engineer',
-    targetJob: 'Google / Meta',
-    lastModified: '2024-03-20',
-    score: 92,
-    isPrimary: true,
-  },
-  {
-    id: '2',
-    title: 'Frontend Developer',
-    targetJob: 'Startup / Series A',
-    lastModified: '2024-03-15',
-    score: 78,
-  },
-  {
-    id: '3',
-    title: 'Frontend Developer',
-    targetJob: 'Amazon',
-    lastModified: '2024-03-10',
-    score: 64,
-  },
-  {
-    id: '4',
-    title: 'Fullstack Dev (Node/React)',
-    targetJob: 'Fintech',
-    lastModified: '2024-03-05',
-    score: 88,
-  },
-];
+
+// export async function fetchResumesAction({
+//   offset,
+//   limit,
+//   searchParams,
+// }: {
+//   offset: number;
+//   limit: number;
+//   searchParams?: { query?: string };
+// }): Promise<ActionResponse> {
+//   let filtered = CURRENT_RESUMES;
+
+//   if (searchParams?.query) {
+//     filtered = filtered.filter((r) =>
+//       r.title.toLowerCase().includes(searchParams.query!.toLowerCase())
+//     );
+//   }
+
+//   return {
+//     success: true,
+//     data: filtered.slice(offset, offset + limit),
+//     message: 'Resume fetched successfully',
+//   };
+// }
+
 export async function fetchResumesAction({
   offset,
   limit,
@@ -51,7 +48,12 @@ export async function fetchResumesAction({
 }: {
   offset: number;
   limit: number;
-  searchParams?: { query?: string };
+  searchParams?: {
+    query?: string;
+    startDate?: string;
+    endDate?: string;
+    atsScore?: string;
+  };
 }): Promise<ActionResponse> {
   let filtered = CURRENT_RESUMES;
 
@@ -59,6 +61,24 @@ export async function fetchResumesAction({
     filtered = filtered.filter((r) =>
       r.title.toLowerCase().includes(searchParams.query!.toLowerCase())
     );
+  }
+
+  if (searchParams?.startDate && searchParams?.endDate) {
+    const selectedStartDate = new Date(searchParams.startDate);
+    const selectedEndDate = new Date(searchParams.endDate);
+
+    filtered = filtered.filter((r) => {
+      const resumeDate = new Date(r.lastModified);
+
+      return resumeDate >= selectedStartDate && resumeDate <= selectedEndDate;
+    });
+  }
+
+  if (searchParams?.atsScore) {
+    const score = Number(searchParams.atsScore);
+    console.log('ATS score:', searchParams?.atsScore, 'score: ', score);
+
+    filtered = filtered.filter((r) => r.score <= score);
   }
 
   return {
@@ -69,13 +89,13 @@ export async function fetchResumesAction({
 }
 export async function deleteSelectedResumesAction(ids: string[]): Promise<ActionResponse> {
   try {
-    CURRENT_RESUMES = CURRENT_RESUMES.filter((resume) => !ids.includes(resume.id));
+    const UPDATED_RESUMES = CURRENT_RESUMES.filter((resume) => !ids.includes(resume.id));
 
     console.log('Deleted resume ids:', ids);
 
     return {
       success: true,
-      data: CURRENT_RESUMES,
+      data: UPDATED_RESUMES,
       message: 'Selected resumes deleted successfully',
     };
   } catch (err) {
@@ -120,7 +140,7 @@ type EditResumeParams = {
 export async function editResumeAction(params: EditResumeParams): Promise<ActionResponse> {
   try {
     let updated = false;
-    CURRENT_RESUMES = CURRENT_RESUMES.map((resume) => {
+    const UPDATED_RESUMES = CURRENT_RESUMES.map((resume) => {
       if (resume.id === params.id) {
         updated = true;
         return { ...resume, ...params };
@@ -130,7 +150,7 @@ export async function editResumeAction(params: EditResumeParams): Promise<Action
 
     return {
       success: updated,
-      data: CURRENT_RESUMES,
+      data: UPDATED_RESUMES,
       message: updated ? 'Resume updated successfully' : 'Resume not found',
     };
   } catch (err) {
@@ -139,6 +159,54 @@ export async function editResumeAction(params: EditResumeParams): Promise<Action
       success: false,
       data: null,
       message: 'Failed to edit resume',
+    };
+  }
+}
+
+export async function JobDescResumeAction(
+  file: File,
+  jobDescription: string,
+  prompt?: string
+): Promise<ActionResponse> {
+  try {
+    if (!file) {
+      return { success: false, message: 'No file uploaded' };
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const uploadDir = path.join(process.cwd(), 'public/uploads');
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, file.name);
+    fs.writeFileSync(filePath, buffer);
+
+    const parsedText = `File uploaded: ${file.name}`;
+
+    const optimizedResume = `
+Inputs received successfully:
+
+- Job Description: ${jobDescription}
+- Prompt: ${prompt || 'None'}
+`;
+    return {
+      success: true,
+      data: {
+        filePath: `/uploads/${file.name}`,
+        parsedText,
+        optimizedResume,
+      },
+      message: 'Resume uploaded and processed locally.',
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: 'Failed to process resume.',
     };
   }
 }
