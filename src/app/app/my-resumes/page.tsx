@@ -31,6 +31,7 @@ import { getScoreColor } from '../utils/misc.functions';
 import RangeFilter from '@/components/RangeFilter';
 import DateRange from '@/components/DateRange';
 import ConfirmModal from '@/components/ConfirmModal';
+import PaginationControls from '../_components/PaginationControls';
 /* TODO:
    3. Add route for editing resumes
 */
@@ -42,12 +43,14 @@ export default function MyResumesPage() {
   const [toggleATS, setToggleATS] = useState(false);
   const [toggleDate, setToggleDate] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [page, setPage] = useState(1);
 
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
   const atsScore = searchParams.get('atsScore') || '';
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
+  const limit = 7;
 
   useEffect(() => {
     let isActive = true;
@@ -56,9 +59,10 @@ export default function MyResumesPage() {
       setLoading(true);
 
       try {
+        const offset = (page - 1) * limit;
         const response = await fetchResumesAction({
-          offset: 0,
-          limit: 20,
+          offset,
+          limit,
           searchParams: { query, atsScore, startDate, endDate },
         });
 
@@ -79,6 +83,10 @@ export default function MyResumesPage() {
     return () => {
       isActive = false;
     };
+  }, [query, atsScore, startDate, endDate, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [query, atsScore, startDate, endDate]);
 
   const handleDeleteSelected = () => {
@@ -283,7 +291,7 @@ export default function MyResumesPage() {
                 </div>
                 <Button
                   variant="link"
-                  href="/app/resumes/edit/${resume.id}"
+                  href={`/app/resumes/edit/${resume.id}`}
                   theme="ghost"
                   className="hover:text-primary w-fit rounded-lg p-2 text-gray-400 transition-all hover:bg-purple-50"
                   title="Edit"
@@ -302,6 +310,12 @@ export default function MyResumesPage() {
             </div>
           ))}
       </div>
+      <PaginationControls
+        page={page}
+        onPrev={() => setPage((p) => Math.max(p - 1, 1))}
+        onNext={() => setPage((p) => p + 1)}
+        hasNext={!loading && resumes.length === limit}
+      />
     </div>
   );
 }
