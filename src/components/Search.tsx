@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import TextInput from './ui/TextInput';
 import { useEffect, useState } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function useDebounce<T>(value: T, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -21,7 +22,13 @@ export function useDebounce<T>(value: T, delay: number) {
   return debouncedValue;
 }
 
-export default function Search({ placeholder }: { placeholder: string }) {
+export default function Search({
+  placeholder,
+  className,
+}: {
+  placeholder: string;
+  className?: string;
+}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -59,6 +66,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
       type="text"
       placeholder={placeholder}
       value={value}
+      className={cn('h-9 text-sm', className)}
       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
       }}

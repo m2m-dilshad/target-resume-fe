@@ -231,3 +231,16 @@ export const mockResumeData = {
     },
   ],
 };
+
+export const mockJobFormData = {
+  company: '',
+  jobTitle: '',
+  status: 'applied',
+  dateApplied: '',
+  salaryRange: '',
+  followUpReminder: '',
+  location: '',
+  recruiterName: '',
+  jobListingUrl: '',
+  notes: '',
+};

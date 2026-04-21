@@ -14,6 +14,7 @@ export type Field = {
   gridColSpan?: number; // Optional: for layout purposes
   gridCols?: number;
   fields?: Field[];
+  required?: boolean;
 };
 
 export type FieldRegistryType = 'text' | 'checkbox' | 'select' | 'radio';

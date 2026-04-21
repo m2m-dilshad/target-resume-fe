@@ -1,6 +1,6 @@
 import Sidebar from './_components/Sidebar';
 
-export default async function AdminLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
