@@ -278,7 +278,7 @@ export function ArrayInputField<T extends FieldValues>({
                 theme="warning"
                 size="xs"
                 roundSize="lg"
-                className="flex h-9 w-9 shrink-0 items-center justify-center !p-0 shadow-sm"
+                className="flex h-9 w-9 shrink-0 items-center justify-center p-0! shadow-sm"
                 onClick={() => remove(index)}
               >
                 <Trash2 size={16} />
