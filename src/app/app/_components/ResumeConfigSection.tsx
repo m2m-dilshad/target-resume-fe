@@ -15,6 +15,7 @@ export default function ResumeConfigSection<T extends FieldValues>({
   section: Section;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const Component = section.type === 'list' ? SectionList : SectionObject;
   return (
     <div
       key={`template-wrapper-section-${section.name}`}
@@ -33,11 +34,7 @@ export default function ResumeConfigSection<T extends FieldValues>({
 
       {/* Section Body */}
       <div className={cn({ hidden: !isOpen })}>
-        {section.type === 'list' ? (
-          <SectionList section={section} />
-        ) : (
-          <SectionObject<T> section={section} />
-        )}
+        <Component<T> section={section} />
       </div>
     </div>
   );
@@ -58,13 +55,16 @@ function SectionObject<T extends FieldValues>({ section }: { section: Section })
             className={cn('space-y-1')}
             style={
               {
-                'grid-column': field.gridColSpan
+                gridColumn: field.gridColSpan
                   ? `span ${field.gridColSpan}/span ${field.gridColSpan}`
                   : 'auto',
               } as React.CSSProperties
             }
           >
-            <FormField<T> key={field.name} field={field} />
+            <FormField<T>
+              key={field.name}
+              field={{ ...field, name: `${section.name}.${field.name}` }}
+            />
           </div>
         );
       })}
@@ -72,10 +72,10 @@ function SectionObject<T extends FieldValues>({ section }: { section: Section })
   );
 }
 
-function SectionList({ section }: { section: Section }) {
+function SectionList<T extends FieldValues>({ section }: { section: Section }) {
   return (
     <div>
-      <ArrayInputField
+      <ArrayInputField<T>
         fieldName={section.name}
         field={{ name: section.name, fields: section.fields, gridCols: section.gridCols }}
       />

@@ -19,41 +19,6 @@ import {
   Wrench,
 } from 'lucide-react';
 
-// // Convert dot-based or underscore-based fields to nested object keys
-// function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown) {
-//   const normalizedPath = path.replace(/_/g, '.');
-//   const parts = normalizedPath.split('.');
-//   let current: Record<string, unknown> = obj;
-
-//   for (let i = 0; i < parts.length; i += 1) {
-//     const key = parts[i];
-//     if (i === parts.length - 1) {
-//       current[key] = value;
-//       return;
-//     }
-
-//     const next = current[key];
-//     if (typeof next !== 'object' || next === null) {
-//       current[key] = {};
-//     }
-
-//     current = current[key] as Record<string, unknown>;
-//   }
-// }
-
-// function buildDefaultValuesFromSchema(sections: Section[]) {
-//   const defaultValues: Record<string, unknown> = {};
-
-//   sections.forEach((section) => {
-//     section.fields.forEach((field) => {
-//       const defaultValue = field.type === 'checkbox' ? false : '';
-//       setNestedValue(defaultValues, field.name, defaultValue);
-//     });
-//   });
-
-//   return defaultValues;
-// }
-
 export const templateFormSchema: Section[] = [
   {
     name: 'template',
