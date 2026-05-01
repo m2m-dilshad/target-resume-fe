@@ -55,7 +55,7 @@ const sizeStyles: Record<TextInputSize, string> = {
 const themeStyles: Record<TextInputTheme, string> = {
   dark: 'border border-gray-500/20 bg-white/10 p-3 placeholder-white/40 transition focus:ring-2 focus:ring-blue-500 focus:outline-none',
   light:
-    'border border-gray-500/20 bg-white p-3 placeholder-black/40 text-black transition focus:ring-2 focus:ring-blue-500 focus:outline-none',
+    'border border-gray-500/40 bg-white p-3 placeholder-black/40 text-black/70 transition focus:ring-2 focus:ring-blue-500 focus:outline-none',
 };
 
 const roundStyles: Record<TextInputRoundSize, string> = {

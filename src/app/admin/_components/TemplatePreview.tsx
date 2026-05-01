@@ -1,6 +1,7 @@
 'use client';
 import ResumeParser from '@/components/resume-parser/ResumeParser';
 import { useWatch, useFormContext } from 'react-hook-form';
+import { RESUME_MOCK_DATA } from '../_constants/resume-mock-data';
 
 export default function TemplatePreview() {
   const { control } = useFormContext();
@@ -10,9 +11,5 @@ export default function TemplatePreview() {
   // Safety check for initialization
   if (!formData?.template) return null;
 
-  return (
-    <div className="preview-container p0 h-full overflow-auto bg-gray-100">
-      <ResumeParser config={formData} />
-    </div>
-  );
+  return <ResumeParser config={formData} data={RESUME_MOCK_DATA} />;
 }

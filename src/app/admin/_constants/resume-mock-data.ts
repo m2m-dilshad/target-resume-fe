@@ -21,7 +21,7 @@ export const RESUME_MOCK_DATA = {
         url: 'https://linkedin.com',
       },
       {
-        network: '',
+        network: 'Github',
         username: 'jdoe-codes',
         url: 'https://github.com',
       },
@@ -32,8 +32,9 @@ export const RESUME_MOCK_DATA = {
       name: 'CloudScale Inc.',
       position: 'Lead Developer',
       url: 'https://cloudscale.com',
+      location: 'NY, 14009',
       startDate: '2020-01-01',
-      endDate: '',
+      endDate: 'Present',
       summary: 'Leading the core infrastructure team.',
       highlights: [
         'Reduced system latency by 40% through microservices optimization.',
