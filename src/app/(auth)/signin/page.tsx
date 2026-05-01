@@ -1,17 +1,19 @@
 'use client';
 import { loginAction } from '@/actions/auth/auth.action';
 import { loginSchema, LoginType } from '@/schemas/auth.schema';
-import linkedInIcon from '@/assets/svgs/icons8-linkedin-50.svg';
+// import linkedInIcon from '@/assets/svgs/icons8-linkedin-50.svg';
 import Typography from '@/components/ui/Typography';
 import Heading from '@/components/ui/Heading';
 import Logo from '@/components/Logo';
 import Button from '@/components/ui/Button';
-import Image from 'next/image';
+// import Image from 'next/image';
 import { Field } from '@/types/form.types';
 import FormWrapper, { SubmitButton } from '@/components/forms/FormWrapper';
 import FormField from '@/components/forms/FormField';
 import { Lock, User } from 'lucide-react';
 import { ActionResponse } from '@/types/action.types';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 const loginFields: Field[] = [
   {
@@ -32,9 +34,23 @@ const loginFields: Field[] = [
 ];
 
 export default function LoginForm() {
+  const router = useRouter();
   const handleSubmitCallback = (response: ActionResponse) => {
+    console.log('Login response:', response);
     if (response.success) {
-      console.log('Login successful:', response);
+      // console.log('Login successful:', response);
+      toast.success(response.message || 'Login successful!');
+      // Redirect or perform other actions on successful login
+      if (response.data.isAdmin) {
+        router.replace('/admin');
+      } else {
+        router.replace('/app');
+      }
+    } else {
+      // console.log('Login failed:', response);
+      const errorMessage =
+        response.message || 'Login failed. Please check your credentials and try again.';
+      toast.error(errorMessage);
     }
   };
   return (
@@ -56,7 +72,6 @@ export default function LoginForm() {
         submitButton={<SubmitButton submitLabel="Sign In" />}
         submitCallback={handleSubmitCallback}
       >
-        {/* Remember + Forgot */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FormField<LoginType>
@@ -91,16 +106,16 @@ export default function LoginForm() {
       </FormWrapper>
 
       {/* Divider */}
-      <div className="relative my-4 flex items-center">
+      {/* <div className="relative my-4 flex items-center">
         <div className="border-border grow border-t"></div>
         <Typography variant="span" className="text-typography-muted mx-4">
           Or continue with
         </Typography>
         <div className="border-border grow border-t"></div>
-      </div>
+      </div> */}
 
       {/* OAuth Buttons */}
-      <div className="flex flex-col gap-3">
+      {/* <div className="flex flex-col gap-3">
         <Button
           size="sm"
           image={
@@ -130,7 +145,7 @@ export default function LoginForm() {
         >
           Continue with LinkedIn
         </Button>
-      </div>
+      </div> */}
 
       {/* Signup */}
       <div className="mt-4 flex items-center justify-center gap-1">

@@ -11,6 +11,7 @@ import {
   poppins,
 } from '@/app/fonts';
 import './globals.css';
+import ToastProvider from '@/components/ToastProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -28,7 +29,10 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${roboto.variable} ${rajdhani.variable} ${montserrat.variable} ${exo_2.variable} ${ibm_plex_mono.variable} ${poppins.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <ToastProvider />
+      </body>
     </html>
   );
 }

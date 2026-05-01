@@ -1,6 +1,7 @@
 'use server';
 import { createTemplateSchema, CreateTemplateType } from '@/schemas/templates.schema';
 import { ActionResponse } from '@/types/action.types';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 export async function fetchTemplates({
   offset,
@@ -10,6 +11,30 @@ export async function fetchTemplates({
   limit: number;
 }): Promise<ActionResponse> {
   console.log('Fetching templates with offset:', offset, 'and limit:', limit);
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token')?.value;
+  if (!token) {
+    return { success: false, message: 'Unauthorized' };
+  }
+  const response = await fetch(`${process.env.API_URL}/admin/templates`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`, // Replace with actual token management
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // console.log('Login successful:', data);
+      return data;
+    })
+    .catch((error) => {
+      // console.error('Login error:', error);
+      return { success: false, message: error.message };
+    });
+
+  console.log('Templates response:', response);
+
   const result = {
     success: true,
     data: [
