@@ -1,5 +1,10 @@
 import { LucideIcon } from 'lucide-react';
 
+export type FieldOptions = {
+  label: string;
+  value: string;
+  icon?: LucideIcon;
+};
 export type Field = {
   name: string;
   id?: string;
@@ -10,10 +15,10 @@ export type Field = {
   minLength?: number;
   className?: string;
   themeSize?: string;
-  options?: { label: string; value: string }[]; // For select and radio types
+  options?: FieldOptions[]; // For select and radio types
   gridColSpan?: number; // Optional: for layout purposes
-  gridCols?: number;
-  fields?: Field[];
+  gridCols?: number; // Optional: for layout purposes
+  fields?: Field[]; // For nested fields (objects)
 };
 
 export type FieldRegistryType = 'text' | 'checkbox' | 'select' | 'radio';

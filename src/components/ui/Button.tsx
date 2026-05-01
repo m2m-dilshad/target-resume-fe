@@ -82,6 +82,7 @@ const Button = ({
   className,
   children,
   image,
+  type = 'button',
   ...props
 }: ButtonProps) => {
   const Component = variant;
@@ -101,9 +102,13 @@ const Button = ({
       </Link>
     );
   }
+  const extraProps: Pick<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> = {};
+  if (variant === 'button') {
+    extraProps.type = type;
+  }
 
   return (
-    <Component className={classNames} {...props}>
+    <Component className={classNames} {...props} {...extraProps}>
       {image && image}
       {children}
     </Component>
