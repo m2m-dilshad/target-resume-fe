@@ -717,7 +717,7 @@ export default function CreateTemplateForm() {
     if (response.success) {
       console.log('Template created successfully:', response);
     } else {
-      console.error('Failed to create template:', response);
+      console.log('Failed to create template:', response);
     }
   };
   return (

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 interface TemplateListProps {
-  data: { id: number; title: string; description?: string; previewImage?: string }[];
+  data: { templateId: number; name: string; description?: string; previewImage?: string }[];
 }
 
 export default function TemplateList({ data }: TemplateListProps) {
@@ -34,12 +34,12 @@ export default function TemplateList({ data }: TemplateListProps) {
       {/* Existing Templates */}
       {data.map((template) => (
         <Card
-          key={template.id}
+          key={template.templateId}
           className="justify-between shadow-sm transition hover:-translate-y-1"
         >
           {/* Header with title and 3-dot menu */}
           <CardHeader className="flex items-center justify-between">
-            <CardTitle>{template.title}</CardTitle>
+            <CardTitle>{template.name}</CardTitle>
             <div className="group relative">
               <MoreHorizontal size={20} className="cursor-pointer" />
               {/* Dropdown Menu */}
@@ -47,16 +47,16 @@ export default function TemplateList({ data }: TemplateListProps) {
                 <Button
                   roundSize="xs"
                   theme="secondary"
-                  className="block w-full border-none px-4 py-2 text-left hover:bg-gray-100"
-                  onClick={() => onEdit(template.id)}
+                  className="block w-full border-none px-4 py-2 text-left hover:bg-gray-100 hover:text-gray-700"
+                  onClick={() => onEdit(template.templateId)}
                 >
                   Edit
                 </Button>
                 <Button
                   roundSize="xs"
                   theme="secondary"
-                  className="block w-full border-none px-4 py-2 text-left text-red-600 hover:bg-gray-100"
-                  onClick={() => onDelete(template.id)}
+                  className="block w-full border-none px-4 py-2 text-left text-red-600 hover:bg-gray-100 hover:text-red-700"
+                  onClick={() => onDelete(template.templateId)}
                 >
                   Delete
                 </Button>
@@ -68,7 +68,7 @@ export default function TemplateList({ data }: TemplateListProps) {
           {template.previewImage ? (
             <Image
               src={template.previewImage}
-              alt={template.title}
+              alt={template.name}
               className="mt-3 h-64 w-full rounded object-cover"
               width={400}
               height={256}

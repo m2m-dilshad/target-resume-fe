@@ -1,8 +1,8 @@
 'use server';
 import { createTemplateSchema, CreateTemplateType } from '@/schemas/templates.schema';
 import { ActionResponse } from '@/types/action.types';
-import { cookies } from 'next/headers';
 import { z } from 'zod';
+import { getAuthToken } from '../misc.action';
 export async function fetchTemplates({
   offset,
   limit,
@@ -11,8 +11,7 @@ export async function fetchTemplates({
   limit: number;
 }): Promise<ActionResponse> {
   console.log('Fetching templates with offset:', offset, 'and limit:', limit);
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
+  const token = await getAuthToken();
   if (!token) {
     return { success: false, message: 'Unauthorized' };
   }
@@ -25,26 +24,13 @@ export async function fetchTemplates({
   })
     .then((response) => response.json())
     .then((data) => {
-      // console.log('Login successful:', data);
       return data;
     })
     .catch((error) => {
-      // console.error('Login error:', error);
-      return { success: false, message: error.message };
+      return { success: false, message: error.message, data: [] };
     });
-
-  console.log('Templates response:', response);
-
-  const result = {
-    success: true,
-    data: [
-      { id: 1, name: 'Template 1' },
-      { id: 2, name: 'Template 2' },
-    ],
-    message: 'Templates fetched successfully',
-  };
-
-  return result;
+  console.log('Fetch templates response:', response);
+  return response;
 }
 
 export async function createTemplateAction(data: CreateTemplateType): Promise<ActionResponse> {
@@ -53,6 +39,50 @@ export async function createTemplateAction(data: CreateTemplateType): Promise<Ac
   if (!result.success) {
     return { success: false, errors: z.flattenError(result.error).fieldErrors };
   }
+  // console.log('Creating template with data:', data);
+  const token = await getAuthToken();
+  if (!token) {
+    return { success: false, message: 'Unauthorized' };
+  }
+  console.log('Auth token for creating template:', token);
+  const { template, ...rest } = data;
 
-  return { success: true };
+  try {
+    const response = await fetch(`${process.env.API_URL}/admin/templates`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Replace with actual token management
+      },
+      body: JSON.stringify({
+        name: template.name,
+        slug: template.slug,
+        description: template.description,
+        layoutJson: { ...rest },
+        isActive: template.isActive,
+        previewImageUrl:
+          'https://res.cloudinary.com/dxfq3iotg/image/upload/v1697050867/target-resume/template-placeholder.png',
+        structureType: template.structure,
+        designStyle: 'MODERN',
+        layoutType: template.layout,
+        atsFriendly: template.ats,
+        supportsProfilePhoto: rest.header.showPhoto !== 'none',
+      }),
+    });
+    const rawText = await response.text();
+    console.log(
+      'Create template response:',
+      `${process.env.API_URL}/admin/templates`,
+      response.status,
+      rawText
+    );
+    if (!response.ok) {
+      return { success: false, message: `Server Error ${response.status}: ${rawText}` };
+    }
+    return rawText
+      ? JSON.parse(rawText)
+      : { success: false, message: 'Server returned empty response' };
+  } catch (error) {
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
+  }
 }
